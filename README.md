@@ -1,7 +1,8 @@
 # TimeProfiler
 Recording all OC methods in the main thread takes time
 
-![](TimeProfiler.png)
+
+<div align="center"><img width="300" height="533.6" src="TimeProfiler.png"></div>
 
 # 特性
 记录所有在主线程运行的OC方法的耗时情况
@@ -17,6 +18,7 @@ iPhone5s及更新真机（arm64）
 2. AppDelegate 中的 application:didFinishLaunchingWithOptions:；
 3. 你想开始的监控点
 导入头文件#include "TPCallTrace.h"；调用startTrace()。
+
 把TimeProfiler文件夹放入项目中，run App后，摇一摇App，就可以看到主线程运行的OC方法的耗时情况
 
 # 原理介绍
