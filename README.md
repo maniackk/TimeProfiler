@@ -1,6 +1,14 @@
 # TimeProfiler
 Recording all OC methods in the main thread takes time
 
+# 更新计划
+## 1.1版本：增加耗时方法排序功能和耗时方法中调用次数排序功能（已做）
+
+<div align="center"><img width="300" height="533.6" src="TPgif.gif"></div>
+
+## 1.2版本：优化代码质量和性能问题（未做） 
+## 1.3版本：增加打印卡顿时候，所有线程堆栈 （未做）
+
 
 <div align="center"><img width="300" height="533.6" src="TimeProfiler.png"></div>
 

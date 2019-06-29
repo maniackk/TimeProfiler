@@ -11,10 +11,19 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class TPRecordModel;
+@class TPRecordCell;
+
+@protocol TPRecordCellDelegate <NSObject>
+
+- (void)recordCell:(TPRecordCell *)cell clickExpandWithSection:(NSInteger)section;
+
+@end
 
 @interface TPRecordCell : UITableViewCell
 
-- (void)bindRecordModel:(TPRecordModel *)model;
+@property (nonatomic, weak)id<TPRecordCellDelegate> delegate;
+
+- (void)bindRecordModel:(TPRecordModel *)model isHiddenExpandBtn:(BOOL)isHidden isExpand:(BOOL)isExpand section:(NSInteger)section isCallCountType:(BOOL)isCallCountType;
 
 @end
 

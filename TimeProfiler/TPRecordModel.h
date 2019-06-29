@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TPRecordModel : NSObject
+@interface TPRecordModel : NSObject <NSCopying>
 
 @property (nonatomic, strong)Class cls;
 @property (nonatomic)SEL sel;
@@ -22,7 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign)int total;
 @property (nonatomic)BOOL isUsed;
 
+//call 次数
+@property (nonatomic, assign)int callCount;
+
 - (instancetype)initWithCls:(Class)cls sel:(SEL)sel time:(uint64_t)costTime depth:(int)depth total:(int)total;
+
+- (BOOL)isEqualRecordModel:(TPRecordModel *)model;
 
 @end
 
