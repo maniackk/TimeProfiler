@@ -11,6 +11,8 @@ Recording all OC methods in the main thread takes time
 ## 1.3版本：增加打印卡顿时候，所有线程堆栈 （未做）
 
 
+## 1.0版本
+
 <div align="center"><img width="300" height="533.6" src="TimeProfiler.png"></div>
 
 # 特性
