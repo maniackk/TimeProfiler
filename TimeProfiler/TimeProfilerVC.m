@@ -459,11 +459,22 @@ static CGFloat TPHeaderHight = 100;
     btn.layer.borderWidth = 1;
     btn.layer.borderColor = [UIColor blackColor].CGColor;
     [btn setTitle:title forState:UIControlStateNormal];
-    [btn setBackgroundImage:[UIImage imageWithColor:[UIColor colorWithRed:127/255.0 green:179/255.0 blue:219/255.0 alpha:1]] forState:UIControlStateSelected];
+    [btn setBackgroundImage:[self imageWithColor:[UIColor colorWithRed:127/255.0 green:179/255.0 blue:219/255.0 alpha:1]] forState:UIControlStateSelected];
     btn.titleLabel.font = [UIFont systemFontOfSize:10];
     [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [btn addTarget:self action:sel forControlEvents:UIControlEventTouchUpInside];
     return btn;
+}
+
+- (UIImage *)imageWithColor:(UIColor *)color{
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    UIImage *theImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return theImage;
 }
 
 - (UIButton *)RecordBtn
