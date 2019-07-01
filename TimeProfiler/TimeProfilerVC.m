@@ -22,13 +22,14 @@ typedef NS_ENUM(NSInteger, TPTableType) {
 static CGFloat TPScrollWidth = 600;
 static CGFloat TPHeaderHight = 100;
 
-@interface TimeProfilerVC () <UITableViewDataSource, UITableViewDelegate, TPRecordCellDelegate>
+@interface TimeProfilerVC () <UITableViewDataSource, TPRecordCellDelegate>
 
 @property (nonatomic, strong)UIButton *RecordBtn;
 @property (nonatomic, strong)UIButton *costTimeSortBtn;
 @property (nonatomic, strong)UIButton *callCountSortBtn;
 @property (nonatomic, strong)UIButton *popVCBtn;
 @property (nonatomic, strong)UITableView *tpTableView;
+@property (nonatomic, strong)UILabel *tableHeaderViewLabel;
 @property (nonatomic, strong)UIScrollView *tpScrollView;
 @property (nonatomic, copy)NSArray *sequentialMethodRecord;
 @property (nonatomic, copy)NSArray *costTimeSortMethodRecord;
@@ -49,6 +50,7 @@ static CGFloat TPHeaderHight = 100;
     [self.view addSubview:self.callCountSortBtn];
     [self.view addSubview:self.popVCBtn];
     [self.view addSubview:self.tpScrollView];
+    [self.tpScrollView addSubview:self.tableHeaderViewLabel];
     [self.tpScrollView addSubview:self.tpTableView];
     // Do any additional setup after loading the view.
     [self stopAndGetCallRecord];
@@ -293,7 +295,7 @@ static CGFloat TPHeaderHight = 100;
     [self.tpTableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
-#pragma mark - UITableViewDataSource, UITableViewDelegate
+#pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -365,31 +367,6 @@ static CGFloat TPHeaderHight = 100;
     return cell;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    if (section==0) {
-        return 30;
-    }
-    return 0;
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
-    if (section == 0) {
-        UIView *headerView = [UIView new];
-        headerView.backgroundColor = [UIColor colorWithRed:219.0/255 green:219.0/255 blue:219.0/255 alpha:1];
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 30)];
-        [headerView addSubview:label];
-        label.text = @"深度       耗时                  方法名";
-        if (self.tpTableType == tableTypeCallCount) {
-            label.text = @"深度       耗时      次数            方法名";
-        }
-        label.font = [UIFont systemFontOfSize:15];
-        return headerView;
-    }
-    return [UIView new];
-}
-
 #pragma mark - Btn click method
 
 - (void)clickRecordBtn
@@ -398,7 +375,7 @@ static CGFloat TPHeaderHight = 100;
     self.callCountSortBtn.selected = NO;
     if (!self.RecordBtn.selected) {
         self.RecordBtn.selected = YES;
-        _tpTableType = tableTypeSequential;
+        self.tpTableType = tableTypeSequential;
         [self.tpTableView reloadData];
     }
 }
@@ -409,7 +386,7 @@ static CGFloat TPHeaderHight = 100;
     self.callCountSortBtn.selected = NO;
     if (!self.costTimeSortBtn.selected) {
         self.costTimeSortBtn.selected = YES;
-        _tpTableType = tableTypecostTime;
+        self.tpTableType = tableTypecostTime;
         [self.tpTableView reloadData];
     }
 }
@@ -420,7 +397,7 @@ static CGFloat TPHeaderHight = 100;
     self.RecordBtn.selected = NO;
     if (!self.callCountSortBtn.selected) {
         self.callCountSortBtn.selected = YES;
-        _tpTableType = tableTypeCallCount;
+        self.tpTableType = tableTypeCallCount;
         [self.tpTableView reloadData];
     }
 }
@@ -442,9 +419,8 @@ static CGFloat TPHeaderHight = 100;
 - (UITableView *)tpTableView
 {
     if (!_tpTableView) {
-        _tpTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, TPScrollWidth, [UIScreen mainScreen].bounds.size.height-TPHeaderHight) style:UITableViewStylePlain];
+        _tpTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 30, TPScrollWidth, [UIScreen mainScreen].bounds.size.height-TPHeaderHight-30) style:UITableViewStylePlain];
         _tpTableView.bounces = NO;
-        _tpTableView.delegate = self;
         _tpTableView.dataSource = self;
         _tpTableView.rowHeight = 18;
         _tpTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -510,6 +486,30 @@ static CGFloat TPHeaderHight = 100;
         _popVCBtn = [self getTPBtnWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width-50, 65, 40, 30) title:@"关闭" sel:@selector(clickPopVCBtn:)];
     }
     return _popVCBtn;
+}
+
+- (UILabel *)tableHeaderViewLabel
+{
+    if (!_tableHeaderViewLabel) {
+        _tableHeaderViewLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, TPScrollWidth, 30)];
+        _tableHeaderViewLabel.font = [UIFont systemFontOfSize:15];
+        _tableHeaderViewLabel.backgroundColor = [UIColor colorWithRed:219.0/255 green:219.0/255 blue:219.0/255 alpha:1];
+    }
+    return _tableHeaderViewLabel;
+}
+
+- (void)setTpTableType:(TPTableType)tpTableType
+{
+    if (_tpTableType!=tpTableType) {
+        if (tpTableType==tableTypeCallCount) {
+            self.tableHeaderViewLabel.text = @"深度       耗时      次数            方法名";
+        }
+        else
+        {
+            self.tableHeaderViewLabel.text = @"深度       耗时                  方法名";
+        }
+        _tpTableType = tpTableType;
+    }
 }
 
 @end
