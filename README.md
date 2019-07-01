@@ -31,9 +31,9 @@ iPhone5s及更新真机（arm64）
 3. 你想开始的监控点
 
 导入头文件#include "TPCallTrace.h"。
-调用startTrace()。 
-void setMaxDepth(int depth);  //设置最大深度
-void setCostMinTime(uint64_t ms_time);    //设置最小耗时，注意，是毫秒
+1. void setMaxDepth(int depth);  //设置最大深度；不调用的话，默认是3
+2. void setCostMinTime(uint64_t ms_time);    //设置最小耗时，注意，是毫秒；不调用的话，默认是1000
+3. 调用startTrace()。 
 
 把TimeProfiler文件夹放入项目中，run App后，摇一摇App，就可以看到主线程运行的OC方法的耗时情况
 
