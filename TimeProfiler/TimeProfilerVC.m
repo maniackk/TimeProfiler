@@ -155,7 +155,7 @@ static CGFloat TPHeaderHight = 100;
                 [textM appendString:str];
                 [textM appendString:@"\r"];
                 [self setRecordDic:methodRecord record:callRecord];
-                if (callRecord->depth==0)
+                if (callRecord->depth==0 || j==mainThreadCallRecord->index)
                 {
                     NSArray *recordModelArr = [self recursive_getRecord:methodRecord];
                     TPRecordHierarchyModel *model = [[TPRecordHierarchyModel alloc] initWithRecordModelArr:recordModelArr];

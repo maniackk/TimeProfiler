@@ -22,7 +22,8 @@ TPMainThreadCallRecord *getMainThreadCallRecord(void)
 {
     return NULL;
 }
-
+void setMaxDepth(int depth){};
+void setCostMinTime(uint64_t time){};
 
 #else
 // iPhone5s及更新设备
@@ -73,7 +74,7 @@ static inline uint64_t getVirtualCallTime()
 
 static inline void pushCallRecord(Class cls, SEL sel)
 {
-    if (mainThreadStack->index > maxDepth) {
+    if (mainThreadStack->index >= maxDepth) {
         ignoreCallNum++;
         return;
     }
@@ -275,6 +276,16 @@ void stopTrace() {
 TPMainThreadCallRecord *getMainThreadCallRecord(void)
 {
     return mainThreadCallRecord;
+}
+
+void setMaxDepth(int depth)
+{
+    maxDepth = depth;
+}
+
+void setCostMinTime(uint64_t time)
+{
+    costMinTime = time;
 }
 
 
