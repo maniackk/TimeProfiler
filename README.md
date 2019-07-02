@@ -1,7 +1,7 @@
 # TimeProfiler
 Recording all OC methods in the main thread takes time
 
-> 大家对TimeProfiler有什么建议或者需求，强烈欢迎到[Issues](https://github.com/maniackk/TimeProfiler/issues)去留言。
+> 大家对TimeProfiler有什么建议或者需求或遇到crash等所有事情，强烈欢迎到[Issues](https://github.com/maniackk/TimeProfiler/issues)去留言。
 
 # 更新计划
 ## 1.1版本：增加耗时方法排序功能和耗时方法中调用次数排序功能（已做）
