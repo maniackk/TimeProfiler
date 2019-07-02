@@ -144,6 +144,13 @@ static CGFloat TPHeaderHight = 100;
 {
     stopTrace();
     TPMainThreadCallRecord *mainThreadCallRecord = getMainThreadCallRecord();
+    if (mainThreadCallRecord==NULL) {
+        NSLog(@"=====================================");
+        NSLog(@"没有调用startTrace()函数");
+        NSLog(@"请看下用法：https://github.com/maniackk/TimeProfiler");
+        NSLog(@"=====================================");
+        return;
+    }
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableString *textM = [[NSMutableString alloc] init];
         NSMutableArray *allMethodRecord = [NSMutableArray array];
