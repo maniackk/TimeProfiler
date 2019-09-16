@@ -168,6 +168,14 @@ __asm volatile (#b " x10\n");
 __attribute__((__naked__))
 static void fake_objc_msgSend_safe()
 {
+    //维护CFI(call frame information)，这样就可以看到调用堆栈
+    __asm__ volatile(
+                     ".cfi_def_cfa w29, 16\n"
+                     ".cfi_offset w30, -8\n"
+                     ".cfi_offset w29, -16\n"
+                     "stp    x29, x30, [sp, #-16]!\n"
+                     "mov    x29, sp\n"
+    );
     // backup registers
     __asm__ volatile(
                      "str x8,  [sp, #-16]!\n"  //arm64标准：sp % 16 必须等于0
@@ -223,7 +231,9 @@ static void fake_objc_msgSend_safe()
                     "ldr x8,  [sp], #16\n"
                     );
     
-    __asm volatile ("ret");
+    __asm volatile (
+                    "ldp x29, x30, [sp], #16\n"
+                    "ret");
 }
 
 void threadCleanLRStack(void *ptr)
