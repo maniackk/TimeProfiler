@@ -23,6 +23,7 @@
 - (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
 {
     TimeProfilerVC *vc = [[TimeProfilerVC alloc] init];
+    vc.modalPresentationStyle = UIModalPresentationFullScreen;
     [self.rootViewController presentViewController:vc animated:YES completion:nil];
 }
 
