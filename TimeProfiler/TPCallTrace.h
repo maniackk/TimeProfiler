@@ -26,13 +26,10 @@ typedef struct {
     int index;
 } TPMainThreadCallRecord;
 
-
-
 void startTrace(void);
 void stopTrace(void);
 TPMainThreadCallRecord *getMainThreadCallRecord(void);
 void setMaxDepth(int depth);
 void setCostMinTime(uint64_t time);
-
 
 #endif /* TPCallTrace_h */

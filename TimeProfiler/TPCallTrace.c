@@ -55,7 +55,7 @@ typedef struct {
     uintptr_t *lr_stack;
 } LRStack;
 
-static id (*orgin_objc_msgSend)(id, SEL, ...);
+id (*orgin_objc_msgSend)(id, SEL, ...);
 static pthread_key_t threadKeyLR;
 static MainThreadMethodStack *mainThreadStack = NULL;
 static TPMainThreadCallRecord *mainThreadCallRecord = NULL;
@@ -159,83 +159,6 @@ uintptr_t hook_objc_msgSend_after()
     return getLRRegisterValue();
 }
 
-#define call(b, value) \
-__asm volatile ("stp x8, x9, [sp, #-16]!\n"); \
-__asm volatile ("mov x10, %0\n" :: "r"(value)); \
-__asm volatile ("ldp x8, x9, [sp], #16\n"); \
-__asm volatile (#b " x10\n");
-
-__attribute__((__naked__))
-static void fake_objc_msgSend_safe()
-{
-    //维护CFI(call frame information)，这样就可以看到调用堆栈
-//    __asm__ volatile(
-//                     ".cfi_def_cfa w29, 16\n"
-//                     ".cfi_offset w30, -8\n"
-//                     ".cfi_offset w29, -16\n"
-//                     "stp    x29, x30, [sp, #-16]!\n"
-//                     "mov    x29, sp\n"
-//    );
-    // backup registers
-    __asm__ volatile(
-                     "str x8,  [sp, #-16]!\n"  //arm64标准：sp % 16 必须等于0
-                     "stp x6, x7, [sp, #-16]!\n"
-                     "stp x4, x5, [sp, #-16]!\n"
-                     "stp x2, x3, [sp, #-16]!\n"
-                     "stp x0, x1, [sp, #-16]!\n"
-                     );
-    // prepare args and call func
-    __asm volatile (
-                    /*
-                     hook_objc_msgSend_before(id self, SEL sel, uintptr_t lr)
-                     x0=self  x1=sel x2=lr
-                     */
-                    "mov x2, lr\n"
-                    "bl _hook_objc_msgSend_before"
-                    );
-    
-    // restore registers
-    __asm volatile (
-                    "ldp x0, x1, [sp], #16\n"
-                    "ldp x2, x3, [sp], #16\n"
-                    "ldp x4, x5, [sp], #16\n"
-                    "ldp x6, x7, [sp], #16\n"
-                    "ldr x8,  [sp], #16\n"
-                    );
-    
-    call(blr, orgin_objc_msgSend)
-
-    // backup registers
-    __asm__ volatile(
-                     "str x8,  [sp, #-16]!\n"  //arm64标准：sp % 16 必须等于0
-                     "stp x6, x7, [sp, #-16]!\n"
-                     "stp x4, x5, [sp, #-16]!\n"
-                     "stp x2, x3, [sp, #-16]!\n"
-                     "stp x0, x1, [sp, #-16]!\n"
-                     );
-    
-    __asm volatile (
-                    "bl _hook_objc_msgSend_after"
-                    );
-    
-    __asm volatile (
-                    "mov lr, x0\n"
-                    );
-    
-    // restore registers
-    __asm volatile (
-                    "ldp x0, x1, [sp], #16\n"
-                    "ldp x2, x3, [sp], #16\n"
-                    "ldp x4, x5, [sp], #16\n"
-                    "ldp x6, x7, [sp], #16\n"
-                    "ldr x8,  [sp], #16\n"
-                    );
-    
-    __asm volatile (
-//                    "ldp x29, x30, [sp], #16\n"
-                    "ret");
-}
-
 void threadCleanLRStack(void *ptr)
 {
     if (ptr != NULL) {
@@ -264,6 +187,8 @@ void initData()
     }
 }
 
+extern void hook_msgSend(void);
+
 void startTrace() {
     initData();
     CallRecordEnable = YES;
@@ -272,7 +197,7 @@ void startTrace() {
         pthread_key_create(&threadKeyLR, threadCleanLRStack);
         struct rebinding rebindObjc_msgSend;
         rebindObjc_msgSend.name = "objc_msgSend";
-        rebindObjc_msgSend.replacement = fake_objc_msgSend_safe;
+        rebindObjc_msgSend.replacement = hook_msgSend;
         rebindObjc_msgSend.replaced = (void *)&orgin_objc_msgSend;
         struct rebinding rebs[1] = {rebindObjc_msgSend};
         rebind_symbols(rebs, 1);
