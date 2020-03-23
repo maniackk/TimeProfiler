@@ -23,28 +23,29 @@ LExit$0:
 
 
 .macro BACKUP_REGISTERS
-    stp q6, q7, [fp, #-0x20]
-    stp q4, q5, [fp, #-0x40]
-    stp q2, q3, [fp, #-0x60]
-    stp q0, q1, [fp, #-0x80]
-    stp x6, x7, [sp, #0x40]
-    stp x4, x5, [sp, #0x30]
-    stp x2, x3, [sp, #0x20]
-    stp x0, x1, [sp, #0x10]
-    str x8,  [sp]
+    stp q6, q7, [sp, #-0x20]!
+    stp q4, q5, [sp, #-0x20]!
+    stp q2, q3, [sp, #-0x20]!
+    stp q0, q1, [sp, #-0x20]!
+    stp x6, x7, [sp, #-0x10]!
+    stp x4, x5, [sp, #-0x10]!
+    stp x2, x3, [sp, #-0x10]!
+    stp x0, x1, [sp, #-0x10]!
+    str x8,  [sp, #-0x10]!
 .endmacro
 
 .macro RESTORE_REGISTERS
-    ldr x8,  [sp]
-    ldp x0, x1, [sp, #0x10]
-    ldp x2, x3, [sp, #0x20]
-    ldp x4, x5, [sp, #0x30]
-    ldp x6, x7, [sp, #0x40]
-    ldp q0, q1, [fp, #0x80]
-    ldp q2, q3, [fp, #0x60]
-    ldp q4, q5, [fp, #0x40]
-    ldp q6, q7, [fp, #0x20]
+    ldr x8,  [sp], #0x10
+    ldp x0, x1, [sp], #0x10
+    ldp x2, x3, [sp], #0x10
+    ldp x4, x5, [sp], #0x10
+    ldp x6, x7, [sp], #0x10
+    ldp q0, q1, [sp], #0x20
+    ldp q2, q3, [sp], #0x20
+    ldp q4, q5, [sp], #0x20
+    ldp q6, q7, [sp], #0x20
 .endmacro
+
 
 .macro CALL_HOOK_BEFORE
     BACKUP_REGISTERS
@@ -68,14 +69,9 @@ LExit$0:
 
 
 ENTRY _hook_msgSend
-    sub    sp, sp, #0xe0
-    stp    x29, x30, [sp, #0xd0]
-    add    x29, sp, #0xd0
     CALL_HOOK_BEFORE
     CALL_ORIGIN_OBJC_MSGSEND
     CALL_HOOK_AFTER
-    ldp    x29, x30, [sp, #0xd0]
-    add    sp, sp, #0xe0
     ret
 END_ENTRY _hook_msgSend
 
