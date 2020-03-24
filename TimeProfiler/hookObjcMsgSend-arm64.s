@@ -21,6 +21,8 @@ $0:
 LExit$0:
 .endmacro
 
+//由于显示调用堆栈（复制栈帧）有一定性能消耗，可自行评估。1表示显示调用堆栈；0表示不显示调用堆栈
+#define SUPPORT_SHOW_CALL_STACK 0
 
 .macro BACKUP_REGISTERS
     stp q6, q7, [sp, #-0x20]!
@@ -46,7 +48,6 @@ LExit$0:
     ldp q6, q7, [sp], #0x20
 .endmacro
 
-
 .macro CALL_HOOK_BEFORE
     BACKUP_REGISTERS
     mov x2, lr
@@ -67,11 +68,46 @@ LExit$0:
     blr x17
 .endmacro
 
+.macro COPY_STACK_FRAME
+#if SUPPORT_SHOW_CALL_STACK
+    stp x29, x30, [sp, #-0x10]
+    mov x17, sp
+    sub x17, fp, x17
+    sub fp, sp, #0x10
+    sub sp, fp, x17
+    stp x0, x1, [sp, #-0x10]
+    stp x2, x3, [sp, #-0x20]
+    mov x0, sp
+    add x1, sp, x17
+    add x1, x1, #0x10
+    mov x3, #0x0
+    cmp x3, x17
+    b.eq #0x18
+    ldr x2, [x1, x3]
+    str x2, [x0, x3]
+    add x3, x3, #0x8
+    cmp x3, x17
+    b.lt #-0x10
+    ldp x0, x1, [sp, #-0x10]
+    ldp x2, x3, [sp, #-0x20]
+#endif
+.endmacro
 
+.macro FREE_STACK_FRAME
+#if SUPPORT_SHOW_CALL_STACK
+    mov sp, fp
+    add sp, sp, #0x10
+    ldr fp, [fp]
+#endif
+.endmacro
+
+# todo: 目前是全量复制栈帧，但是其实只需要复制参数传递用到的栈，利用函数签名？等手段，去判断需要复制的栈帧大小
 ENTRY _hook_msgSend
+    COPY_STACK_FRAME
     CALL_HOOK_BEFORE
     CALL_ORIGIN_OBJC_MSGSEND
     CALL_HOOK_AFTER
+    FREE_STACK_FRAME
     ret
 END_ENTRY _hook_msgSend
 
