@@ -22,7 +22,7 @@ LExit$0:
 .endmacro
 
 //由于显示调用堆栈（复制栈帧）有一定性能消耗，可自行评估。1表示显示调用堆栈；0表示不显示调用堆栈
-#define SUPPORT_SHOW_CALL_STACK 0
+#define SUPPORT_SHOW_CALL_STACK 1
 
 .macro BACKUP_REGISTERS
     stp q6, q7, [sp, #-0x20]!
