@@ -3,11 +3,12 @@ Recording all OC methods in the main thread takes time
 
 > 大家对TimeProfiler有什么建议或者需求或遇到crash等所有事情，强烈欢迎到[Issues](https://github.com/maniackk/TimeProfiler/issues)去留言。
 
+
+
 # 更新计划
+**目前已经支持显示调用堆栈。**
 ## 1.1版本：增加耗时方法排序功能和耗时方法中调用次数排序功能（已做）
-
 ![](tp.jpg)
-
 
 ## 1.2版本：优化代码质量和性能问题（未做） 
 ## 1.3版本：增加打印卡顿时候，所有线程堆栈 （未做）
@@ -20,6 +21,7 @@ Recording all OC methods in the main thread takes time
 # 特性
 1. 记录所有在主线程运行的OC方法的耗时情况
 2. 支持设置记录的最大深度和最小耗时
+3. 显示调用堆栈
 
 
 # 支持机型
