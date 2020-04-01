@@ -10,7 +10,7 @@
 
 @implementation TPRecordModel
 
-- (instancetype)initWithCls:(Class)cls sel:(SEL)sel time:(uint64_t)costTime depth:(int)depth total:(int)total
+- (instancetype)initWithCls:(Class)cls sel:(SEL)sel time:(uint64_t)costTime depth:(int)depth total:(int)total is_objc_msgSendSuper:(BOOL)is_objc_msgSendSuper
 {
     self = [super init];
     if (self) {
@@ -21,6 +21,7 @@
         self.depth = depth;
         self.total = total;
         self.isUsed = NO;
+        self.is_objc_msgSendSuper = is_objc_msgSendSuper;
     }
     return self;
 }
@@ -35,6 +36,7 @@
     model.total = self.total;
     model.isUsed = self.isUsed;
     model.callCount = self.callCount;
+    model.is_objc_msgSendSuper = self.is_objc_msgSendSuper;
     return model;
 }
 

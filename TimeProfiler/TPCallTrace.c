@@ -55,7 +55,8 @@ typedef struct {
     uintptr_t *lr_stack;
 } LRStack;
 
-id (*orgin_objc_msgSend)(id, SEL, ...);
+void (*orgin_objc_msgSend)(void);
+void (*orgin_objc_msgSendSuper2)(void);
 static pthread_key_t threadKeyLR;
 static MainThreadMethodStack *mainThreadStack = NULL;
 static TPMainThreadCallRecord *mainThreadCallRecord = NULL;
@@ -91,7 +92,7 @@ static inline void pushCallRecord(Class cls, SEL sel)
     }
 }
 
-static inline void popCallRecord()
+static inline void popCallRecord(BOOL is_objc_msgSendSuper)
 {
     if (ignoreCallNum > 0) {
         ignoreCallNum--;
@@ -113,6 +114,7 @@ static inline void popCallRecord()
             callRecord->depth = depth;
             callRecord->costTime = costTime;
             callRecord->sel = record->sel;
+            callRecord->is_objc_msgSendSuper = is_objc_msgSendSuper;
         }
     }
 }
@@ -150,10 +152,10 @@ void hook_objc_msgSend_before(id self, SEL sel, uintptr_t lr)
     setLRRegisterValue(lr);
 }
 
-uintptr_t hook_objc_msgSend_after()
+uintptr_t hook_objc_msgSend_after(BOOL is_objc_msgSendSuper)
 {
     if (CallRecordEnable && pthread_main_np()) {
-        popCallRecord();
+        popCallRecord(is_objc_msgSendSuper);
     }
     
     return getLRRegisterValue();
@@ -188,6 +190,7 @@ void initData()
 }
 
 extern void hook_msgSend(void);
+extern void hook_msgSendSuper2(void);
 
 void startTrace() {
     initData();
@@ -199,8 +202,12 @@ void startTrace() {
         rebindObjc_msgSend.name = "objc_msgSend";
         rebindObjc_msgSend.replacement = hook_msgSend;
         rebindObjc_msgSend.replaced = (void *)&orgin_objc_msgSend;
-        struct rebinding rebs[1] = {rebindObjc_msgSend};
-        rebind_symbols(rebs, 1);
+        struct rebinding rebindObjc_msgSendSuper2;
+        rebindObjc_msgSendSuper2.name = "objc_msgSendSuper2";
+        rebindObjc_msgSendSuper2.replacement = hook_msgSendSuper2;
+        rebindObjc_msgSendSuper2.replaced = (void *)&orgin_objc_msgSendSuper2;
+        struct rebinding rebs[2] = {rebindObjc_msgSend, rebindObjc_msgSendSuper2};
+        rebind_symbols(rebs, 2);
     });
 };
 

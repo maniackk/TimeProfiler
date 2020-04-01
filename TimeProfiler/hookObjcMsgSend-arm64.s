@@ -55,8 +55,25 @@ LExit$0:
     RESTORE_REGISTERS
 .endmacro
 
+.macro CALL_HOOK_SUPER_BEFORE
+    BACKUP_REGISTERS
+    ldp    x0, x16, [x0]
+    mov x2, lr
+    bl _hook_objc_msgSend_before
+    RESTORE_REGISTERS
+.endmacro
+
 .macro CALL_HOOK_AFTER
     BACKUP_REGISTERS
+    mov x0, #0x0
+    bl _hook_objc_msgSend_after
+    mov lr, x0
+    RESTORE_REGISTERS
+.endmacro
+
+.macro CALL_HOOK_SUPER_AFTER
+    BACKUP_REGISTERS
+    mov x0, #0x1
     bl _hook_objc_msgSend_after
     mov lr, x0
     RESTORE_REGISTERS
@@ -65,6 +82,12 @@ LExit$0:
 .macro CALL_ORIGIN_OBJC_MSGSEND
     adrp    x17, _orgin_objc_msgSend@PAGE
     ldr    x17, [x17, _orgin_objc_msgSend@PAGEOFF]
+    blr x17
+.endmacro
+
+.macro CALL_ORIGIN_OBJC_MSGSENDSUPER2
+    adrp    x17, _orgin_objc_msgSendSuper2@PAGE
+    ldr    x17, [x17, _orgin_objc_msgSendSuper2@PAGEOFF]
     blr x17
 .endmacro
 
@@ -101,7 +124,7 @@ LExit$0:
 #endif
 .endmacro
 
-# todo: 目前是全量复制栈帧，但是其实只需要复制参数传递用到的栈，利用函数签名？等手段，去判断需要复制的栈帧大小
+# todo: 目前是全量复制栈帧，但是其实只需要复制参数传递用到的栈，利用函数签名等手段，去判断需要复制的栈帧大小
 ENTRY _hook_msgSend
     COPY_STACK_FRAME
     CALL_HOOK_BEFORE
@@ -111,9 +134,13 @@ ENTRY _hook_msgSend
     ret
 END_ENTRY _hook_msgSend
 
-// void hook_msgSend(...);
-//ENTRY _hook_msgSend_stret
-//b _hook_msgSend
-//END_ENTRY _hook_msgSend_stret
+ENTRY _hook_msgSendSuper2
+    COPY_STACK_FRAME
+    CALL_HOOK_SUPER_BEFORE
+    CALL_ORIGIN_OBJC_MSGSENDSUPER2
+    CALL_HOOK_SUPER_AFTER
+    FREE_STACK_FRAME
+    ret
+END_ENTRY _hook_msgSendSuper2
 
 #endif

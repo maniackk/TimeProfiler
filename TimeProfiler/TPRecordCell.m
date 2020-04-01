@@ -77,7 +77,14 @@
     {
         [methodStr appendString:@"-"];
     }
-    [methodStr appendString:[NSString stringWithFormat:@"[%@  %@]", NSStringFromClass(model.cls), NSStringFromSelector(model.sel)]];
+    if (model.is_objc_msgSendSuper) {
+        [methodStr appendString:[NSString stringWithFormat:@"[(super)%@  %@]", NSStringFromClass(model.cls), NSStringFromSelector(model.sel)]];
+    }
+    else
+    {
+        [methodStr appendString:[NSString stringWithFormat:@"[%@  %@]", NSStringFromClass(model.cls), NSStringFromSelector(model.sel)]];
+    }
+    
     self.methodLabel.text = methodStr;
 }
 

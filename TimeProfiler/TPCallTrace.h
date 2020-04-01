@@ -18,6 +18,7 @@ typedef struct {
     SEL sel;
     uint64_t costTime; //单位：纳秒（百万分之一秒）
     int depth;
+    BOOL is_objc_msgSendSuper;
 } TPCallRecord;
 
 typedef struct {

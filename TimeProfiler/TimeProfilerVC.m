@@ -135,7 +135,7 @@ static CGFloat TPHeaderHight = 100;
             }
         }
         
-        TPRecordModel *model = [[TPRecordModel alloc] initWithCls:record->cls sel:record->sel time:record->costTime depth:record->depth total:total];
+        TPRecordModel *model = [[TPRecordModel alloc] initWithCls:record->cls sel:record->sel time:record->costTime depth:record->depth total:total is_objc_msgSendSuper:record->is_objc_msgSendSuper];
         [arr insertObject:model atIndex:0];
     }
 }
@@ -212,7 +212,13 @@ static CGFloat TPHeaderHight = 100;
     {
         [str appendString:@"-"];
     }
-    [str appendString:[NSString stringWithFormat:@"[%@　　%@]", NSStringFromClass(callRecord->cls), NSStringFromSelector(callRecord->sel)]];
+    if (callRecord->is_objc_msgSendSuper) {
+        [str appendString:[NSString stringWithFormat:@"[(super)%@　　%@]", NSStringFromClass(callRecord->cls), NSStringFromSelector(callRecord->sel)]];
+    }
+    else
+    {
+        [str appendString:[NSString stringWithFormat:@"[%@　　%@]", NSStringFromClass(callRecord->cls), NSStringFromSelector(callRecord->sel)]];
+    }
     return str.copy;
 }
 
