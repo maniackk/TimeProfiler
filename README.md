@@ -6,7 +6,7 @@ Recording all OC methods in the main thread takes time
 
 
 # 更新计划
-**目前已经支持显示调用堆栈。**
+**目前已经支持显示调用堆栈。**  
 **支持super函数的统计**
 ## 1.1版本：增加耗时方法排序功能和耗时方法中调用次数排序功能（已做）
 ![](tp.jpg)
