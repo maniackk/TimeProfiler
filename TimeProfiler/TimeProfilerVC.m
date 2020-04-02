@@ -22,6 +22,8 @@ typedef NS_ENUM(NSInteger, TPTableType) {
 static CGFloat TPScrollWidth = 600;
 static CGFloat TPHeaderHight = 100;
 
+#define IS_SHOW_DEBUG_INFO_IN_CONSOLE 0
+
 @interface TimeProfilerVC () <UITableViewDataSource, TPRecordCellDelegate>
 
 @property (nonatomic, strong)UIButton *RecordBtn;
@@ -152,7 +154,9 @@ static CGFloat TPHeaderHight = 100;
         return;
     }
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        #if IS_SHOW_DEBUG_INFO_IN_CONSOLE
         NSMutableString *textM = [[NSMutableString alloc] init];
+        #endif
         NSMutableArray *allMethodRecord = [NSMutableArray array];
         int i = 0, j;
         while (i <= mainThreadCallRecord->index) {
@@ -160,15 +164,20 @@ static CGFloat TPHeaderHight = 100;
             for (j = i; j <= mainThreadCallRecord->index;j++)
             {
                 TPCallRecord *callRecord = &mainThreadCallRecord->record[j];
+                #if IS_SHOW_DEBUG_INFO_IN_CONSOLE
                 NSString *str = [self debug_getMethodCallStr:callRecord];
                 [textM appendString:str];
                 [textM appendString:@"\r"];
+                #endif
                 [self setRecordDic:methodRecord record:callRecord];
                 if (callRecord->depth==0 || j==mainThreadCallRecord->index)
                 {
                     NSArray *recordModelArr = [self recursive_getRecord:methodRecord];
-                    TPRecordHierarchyModel *model = [[TPRecordHierarchyModel alloc] initWithRecordModelArr:recordModelArr];
-                    [allMethodRecord addObject:model];
+                    recordModelArr = [self filterClass:recordModelArr];
+                    if (recordModelArr.count > 0) {
+                        TPRecordHierarchyModel *model = [[TPRecordHierarchyModel alloc] initWithRecordModelArr:recordModelArr];
+                        [allMethodRecord addObject:model];
+                    }
                     //退出循环
                     break;
                 }
@@ -184,9 +193,40 @@ static CGFloat TPHeaderHight = 100;
         });
         [self sortCostTimeRecord:[[NSArray alloc] initWithArray:allMethodRecord copyItems:YES]];
         [self sortCallCountRecord:[[NSArray alloc] initWithArray:allMethodRecord copyItems:YES]];
+        #if IS_SHOW_DEBUG_INFO_IN_CONSOLE
         [self debug_printMethodRecord:textM];
+        #endif
     });
 }
+
+- (NSArray *)filterClass:(NSArray *)recordModelArr
+{
+    NSArray *ignoreClass = @[NSClassFromString(@"TimeProfilerVC"), NSClassFromString(@"TPRecordHierarchyModel"), NSClassFromString(@"TPRecordCell"), NSClassFromString(@"TPRecordModel")];
+    NSMutableArray *result = [NSMutableArray array];
+    if ([recordModelArr isKindOfClass:NSArray.class]) {
+        int depth = 0;
+        BOOL isIgnore = FALSE;
+        for (TPRecordModel *model in recordModelArr) {
+            if (isIgnore) {
+                if (depth >= model.depth) {
+                    isIgnore = [ignoreClass containsObject:model.cls];
+                    depth = model.depth;
+                }
+            }
+            else
+            {
+                isIgnore = [ignoreClass containsObject:model.cls];
+                depth = model.depth;
+            }
+            if (!isIgnore) {
+                [result addObject:model];
+            }
+        }
+    }
+    return result;
+}
+
+#if IS_SHOW_DEBUG_INFO_IN_CONSOLE
 
 - (void)debug_printMethodRecord:(NSString *)text
 {
@@ -221,6 +261,8 @@ static CGFloat TPHeaderHight = 100;
     }
     return str.copy;
 }
+
+#endif
 
 - (void)sortCostTimeRecord:(NSArray *)arr
 {
