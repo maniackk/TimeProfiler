@@ -6,7 +6,8 @@ Recording all OC methods in the main thread takes time
 
 
 # 更新计划
-**目前已经支持显示调用堆栈。**
+**目前已经支持显示调用堆栈。**  
+**支持super函数的统计**
 ## 1.1版本：增加耗时方法排序功能和耗时方法中调用次数排序功能（已做）
 ![](tp.jpg)
 
@@ -22,7 +23,7 @@ Recording all OC methods in the main thread takes time
 1. 记录所有在主线程运行的OC方法的耗时情况
 2. 支持设置记录的最大深度和最小耗时
 3. 显示调用堆栈
-
+4. 支持super函数的统计
 
 # 支持机型
 iPhone5s及更新真机（arm64）
