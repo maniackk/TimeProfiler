@@ -32,7 +32,7 @@ void setCostMinTime(uint64_t time){};
 #include <stdlib.h>
 #include <dispatch/dispatch.h>
 #include <pthread.h>
-#include "fishhook/fishhook.h"
+#include "fishhook.h"
 #include <objc/runtime.h>
 #include <sys/time.h>
 

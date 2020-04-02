@@ -11,6 +11,7 @@
 #import "TPRecordCell.h"
 #import "TPRecordModel.h"
 #import "TPRecordHierarchyModel.h"
+#import "TimeProfiler.h"
 #import <objc/runtime.h>
 
 typedef NS_ENUM(NSInteger, TPTableType) {
@@ -201,7 +202,7 @@ static CGFloat TPHeaderHight = 100;
 
 - (NSArray *)filterClass:(NSArray *)recordModelArr
 {
-    NSArray *ignoreClass = @[NSClassFromString(@"TimeProfilerVC"), NSClassFromString(@"TPRecordHierarchyModel"), NSClassFromString(@"TPRecordCell"), NSClassFromString(@"TPRecordModel")];
+    NSArray *ignoreClassArr = [TimeProfiler shareInstance].ignoreClassArr;
     NSMutableArray *result = [NSMutableArray array];
     if ([recordModelArr isKindOfClass:NSArray.class]) {
         int depth = 0;
@@ -209,13 +210,13 @@ static CGFloat TPHeaderHight = 100;
         for (TPRecordModel *model in recordModelArr) {
             if (isIgnore) {
                 if (depth >= model.depth) {
-                    isIgnore = [ignoreClass containsObject:model.cls];
+                    isIgnore = [ignoreClassArr containsObject:model.cls];
                     depth = model.depth;
                 }
             }
             else
             {
-                isIgnore = [ignoreClass containsObject:model.cls];
+                isIgnore = [ignoreClassArr containsObject:model.cls];
                 depth = model.depth;
             }
             if (!isIgnore) {
