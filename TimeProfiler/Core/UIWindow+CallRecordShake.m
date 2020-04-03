@@ -7,7 +7,7 @@
 //
 
 #import "UIWindow+CallRecordShake.h"
-#import "TimeProfilerVC.h"
+#import "TPMainVC.h"
 
 @implementation UIWindow (CallRecordShake)
 
@@ -22,7 +22,7 @@
 
 - (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
 {
-    TimeProfilerVC *vc = [[TimeProfilerVC alloc] init];
+    TPMainVC *vc = [[TPMainVC alloc] init];
     vc.modalPresentationStyle = UIModalPresentationFullScreen;
     [self.rootViewController presentViewController:vc animated:YES completion:nil];
 }

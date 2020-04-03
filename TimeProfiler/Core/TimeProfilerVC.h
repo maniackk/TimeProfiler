@@ -10,7 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class TPModel;
+
 @interface TimeProfilerVC : UIViewController
+
+- (instancetype)initWithModel:(TPModel *)model;
 
 @end
 

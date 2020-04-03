@@ -25,9 +25,10 @@ typedef struct {
     TPCallRecord *record;
     int allocLength;
     int index;
+    char *featureName;
 } TPMainThreadCallRecord;
 
-void startTrace(void);
+void startTrace(char *featureName);
 void stopTrace(void);
 TPMainThreadCallRecord *getMainThreadCallRecord(void);
 void setMaxDepth(int depth);

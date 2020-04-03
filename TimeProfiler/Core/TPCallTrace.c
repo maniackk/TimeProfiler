@@ -11,7 +11,7 @@
 #ifndef __arm64__
 // 模拟器 或者 iPhone5及更老iPhone设备，不是使用arm64
 
-void startTrace() {
+void startTrace(char *featureName) {
     printf("====模拟器或者iPhone5及更老iPhone设备,不能hook objc_msgSend====");
 };
 
@@ -172,13 +172,14 @@ void threadCleanLRStack(void *ptr)
     }
 }
 
-void initData()
+void initData(char *featureName)
 {
     if (!mainThreadCallRecord) {
         mainThreadCallRecord = (TPMainThreadCallRecord *)malloc(sizeof(TPMainThreadCallRecord));
         mainThreadCallRecord->allocLength = 128;
         mainThreadCallRecord->record = (TPCallRecord *)malloc(mainThreadCallRecord->allocLength * sizeof(TPCallRecord));
         mainThreadCallRecord->index = -1;
+        mainThreadCallRecord->featureName = featureName;
     }
     
     if (!mainThreadStack) {
@@ -192,8 +193,8 @@ void initData()
 extern void hook_msgSend(void);
 extern void hook_msgSendSuper2(void);
 
-void startTrace() {
-    initData();
+void startTrace(char *featureName) {
+    initData(featureName);
     CallRecordEnable = YES;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -213,11 +214,17 @@ void startTrace() {
 
 void stopTrace() {
     CallRecordEnable = NO;
+    free(mainThreadStack->stack);
+    free(mainThreadStack);
+    mainThreadStack = NULL;
+    ignoreCallNum = 0;
 };
 
 TPMainThreadCallRecord *getMainThreadCallRecord(void)
 {
-    return mainThreadCallRecord;
+    TPMainThreadCallRecord *retValue = mainThreadCallRecord;
+    mainThreadCallRecord = NULL;
+    return retValue;
 }
 
 void setMaxDepth(int depth)
