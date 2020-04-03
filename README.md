@@ -10,23 +10,19 @@ Recording all OC methods in the main thread takes time
 **支持super函数的统计**   
 **重大更新：仿照os_signpost，用户在一个功能的开始调用TPStartTrace，在结束地方调用TPStopTrace。具体用法见下面👇**
 ## 1.1版本：增加耗时方法排序功能和耗时方法中调用次数排序功能（已做）
-![](tp.jpg)
 
 ![pic](https://wukaikai.tech/images/tuchuang/tpjj.png)
 
 ## 1.2版本：优化代码质量和性能问题（未做） 
 ## 1.3版本：增加打印卡顿时候，所有线程堆栈 （未做）
 
-# 效果
-## 1.0版本
-
-<div align="center"><img width="300" height="533.6" src="TimeProfiler.png"></div>
 
 # 特性
 1. 记录所有在主线程运行的OC方法的耗时情况
 2. 支持设置记录的最大深度和最小耗时
 3. 显示调用堆栈
 4. 支持super函数的统计
+5. 支持在程序中多次监控，类似os_signpost
 
 # 支持机型
 iPhone5s及更新真机（arm64）
