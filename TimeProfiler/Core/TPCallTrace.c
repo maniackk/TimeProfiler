@@ -214,10 +214,12 @@ void startTrace(char *featureName) {
 
 void stopTrace() {
     CallRecordEnable = NO;
-    free(mainThreadStack->stack);
-    free(mainThreadStack);
-    mainThreadStack = NULL;
-    ignoreCallNum = 0;
+    if (mainThreadStack) {
+        free(mainThreadStack->stack);
+        free(mainThreadStack);
+        mainThreadStack = NULL;
+        ignoreCallNum = 0;
+    }
 };
 
 TPMainThreadCallRecord *getMainThreadCallRecord(void)

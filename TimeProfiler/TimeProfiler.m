@@ -219,8 +219,10 @@ NSNotificationName const TPTimeProfilerProcessedDataNotification = @"TPTimeProfi
             [self.modelArr addObject:model];
             [[NSNotificationCenter defaultCenter] postNotificationName:TPTimeProfilerProcessedDataNotification object:nil];
         });
-        free(mainThreadCallRecord->record);
-        free(mainThreadCallRecord);
+        if (mainThreadCallRecord) {
+            free(mainThreadCallRecord->record);
+            free(mainThreadCallRecord);
+        }
         #if IS_SHOW_DEBUG_INFO_IN_CONSOLE
         [self debug_printMethodRecord:textM];
         #endif
