@@ -3,7 +3,7 @@
 //  VideoIphone
 //
 //  Created by 吴凯凯 on 2019/6/13.
-//  Copyright © 2019 com.baidu. All rights reserved.
+//  Copyright © 2019 吴凯凯. All rights reserved.
 //
 
 #include "TPCallTrace.h"

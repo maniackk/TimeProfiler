@@ -3,7 +3,7 @@
 //  VideoIphone
 //
 //  Created by 吴凯凯 on 2019/6/29.
-//  Copyright © 2019 com.baidu. All rights reserved.
+//  Copyright © 2019 吴凯凯. All rights reserved.
 //
 
 #import "TPRecordHierarchyModel.h"
